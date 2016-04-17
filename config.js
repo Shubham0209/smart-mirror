@@ -2,6 +2,15 @@ var config = {
     // Lenguage for the mirror (currently not implemented)
     lenguage : "en",
     greeting : ["Hi, sexy!"], // An array of greetings to randomly choose from
+    // Alternativly you can have greetings that appear based on the time of day
+    /*
+    greeting : {
+       night: ["Bed?", "zZzzZz", "Time to sleep"],
+       morning: ["Good Morning"],
+       midday: ["Hey!", "Hello"],
+       evening: ["Good evening"]
+    },
+    */
     // forcast.io
     forcast : {
         key : "", // Your forcast.io api key
