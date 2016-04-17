@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
 
-    angular.module('SmartMirror', ['ngAnimate']);
+    angular.module('SmartMirror', ['ngAnimate'])
     
     .config(["$sceDelegateProvider", function($sceDelegateProvider) {
             $sceDelegateProvider.resourceUrlWhitelist([
