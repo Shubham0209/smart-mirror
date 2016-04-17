@@ -10,6 +10,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-animate.min.js"></script>
     <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+    <script>
+ 		responsiveVoice.setDefaultVoice("UK English Male");
+ 	</script>
 
     <!-- App -->
     <script src="config.js"></script>
@@ -24,6 +27,7 @@
     <script src="js/giphy-service.js"></script>
     <script src="js/geolocation-service.js"></script>
     <script src="js/calendar-service.js"></script>
+    <script src="js/search-service.js"></script>
     <script src="js/traffic-service.js"></script>
     <script src="js/controller.js"></script>
     <script src="js/rss-service.js"></script>
@@ -115,6 +119,9 @@
           <img class="dilbert animate-grow" ng-src="{{dilbert.content}}"/>
           <div class="comic-title">{{dilbert.title}}</div>
         </div>
+        <div class="video-container animate-grow" ng-show="focus == 'video'">
+          <iframe class="video animate-grow" ng-src="{{video}}"/></iframe>
+         </div>
 
       </div>
       <div class="bottom-center">
