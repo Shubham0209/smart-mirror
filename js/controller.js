@@ -73,7 +73,22 @@
 
             var refreshGreeting = function () {     
                 console.log("Refreshing greeting");			
-                $scope.greeting = config.greeting[Math.floor(Math.random() * config.greeting.length)];
+                if(!Array.isArray(config.greeting) && typeof config.greeting.midday != 'undefined') {
+                    var hour = moment().hour();
+                    var geetingTime = "midday";
+
+                    if (hour > 4 && hour < 11) {
+                        geetingTime = "morning";
+                    } else if (hour > 18 && hour < 23) {
+                        geetingTime = "evening";
+                    } else if (hour >= 23 || hour < 4) {
+                        geetingTime = "night";
+                    }
+
+                    $scope.greeting = config.greeting[geetingTime][Math.floor(Math.random() * config.greeting.morning.length)];
+                }else if(Array.isArray(config.greeting)){
+                    $scope.greeting = config.greeting[Math.floor(Math.random() * config.greeting.length)];
+                }
             };
 
             var refreshTodoList = function () {
@@ -149,12 +164,14 @@
 
             var defaultView = function() {
                 console.debug("Ok, going to default view...");
+                responsiveVoice.speak("Ok going to default view now");
                 $scope.focus = "default";
             }
 
             // List commands
             AnnyangService.addCommand('What can I say', function() {
                 console.debug("Here is a list of commands...");
+                responsiveVoice.speak("Here is a list of commands...");
                 console.log(AnnyangService.commands);
                 $scope.focus = "commands";
             });
@@ -165,23 +182,31 @@
             // Hide everything and "sleep"
             AnnyangService.addCommand('(Go to) sleep', function() {
                 console.debug("Ok, going to sleep...");
+                responsiveVoice.speak("Ok, going to sleep...");
                 $scope.focus = "sleep";
             });
 
             // Go back to default view
-            AnnyangService.addCommand('Wake up', defaultView);
+                        AnnyangService.addCommand('Wake up', function(){
+            				setTimeout(function(){
+					responsiveVoice.speak("Hello " + $scope.user.name + " how can i help you?");
+				}, 3000);
+				$scope.focus = "default";
+			});
+
 
             // Hide everything and "sleep"
             AnnyangService.addCommand('Show debug information', function() {
                 console.debug("Boop Boop. Showing debug info...");
+                responsiveVoice.speak("Boop Boop. Showing debug info...");
                 $scope.debug = true;
             });
 
             // Hide everything and "sleep"
             AnnyangService.addCommand('Show map', function() {
                 console.debug("Going on an adventure?");
-                responsiveVoice.speak("Showing map", "UK English Female");
-                GeolocationService.getLocation({enableHighAccuracy: true}).then(function(geoposition){
+                responsiveVoice.speak("Showing map of your current location");
+                    GeolocationService.getLocation({enableHighAccuracy: true}).then(function(geoposition){
                     console.log("Geoposition", geoposition);
                     $scope.map = MapService.generateMap(geoposition.coords.latitude+','+geoposition.coords.longitude);
                     $scope.focus = "map";
@@ -191,6 +216,7 @@
             // Hide everything and "sleep"
             AnnyangService.addCommand('Show (me a) map of *location', function(location) {
                 console.debug("Getting map of", location);
+                responsiveVoice.speak("Getting map of"+location+"...It might take some time");
                 $scope.map = MapService.generateMap(location);
                 $scope.focus = "map";
             });
@@ -198,21 +224,25 @@
             // Zoom in map
             AnnyangService.addCommand('(map) zoom in', function() {
                 console.debug("Zoooooooom!!!");
+                responsiveVoice.speak("zooming into the map");
                 $scope.map = MapService.zoomIn();
             });
 
             AnnyangService.addCommand('(map) zoom out', function() {
                 console.debug("Moooooooooz!!!");
+                responsiveVoice.speak("zooming out of the map");
                 $scope.map = MapService.zoomOut();
             });
 
             AnnyangService.addCommand('(map) zoom (to) *value', function(value) {
                 console.debug("Moooop!!!", value);
+                responsiveVoice.speak("zooming to"+value);
                 $scope.map = MapService.zoomTo(value);
             });
 
             AnnyangService.addCommand('(map) reset zoom', function() {
                 console.debug("Zoooommmmmzzz00000!!!");
+                responsiveVoice.speak("resetting the map zoom");
                 $scope.map = MapService.reset();
                 $scope.focus = "map";
             });
@@ -225,6 +255,7 @@
             // Change name
             AnnyangService.addCommand('My (name is)(name\'s) *name', function(name) {
                 console.debug("Hi", name, "nice to meet you");
+                responsiveVoice.speak("Hi " + name + " it's good to see you. My name is Jarvis.L.O.L");
                 $scope.user.name = name;
             });
 
@@ -246,6 +277,7 @@
             // Check the time
             AnnyangService.addCommand('what time is it', function(task) {
                  console.debug("It is", moment().format('h:mm:ss a'));
+                 responsiveVoice.speak("It is"+ moment().format('h:mm:ss a'));
             });
 
             // Turn lights off
@@ -254,8 +286,9 @@
             });
 
             //Show giphy image
-            AnnyangService.addCommand('giphy *img', function(img) {
+            AnnyangService.addCommand('get *img', function(img) {
                 GiphyService.init(img).then(function(){
+                responsiveVoice.speak("OK showing the giphy of"+ img);
                     $scope.gifimg = GiphyService.giphyImg();
                     $scope.focus = "gif";
                 });
@@ -264,6 +297,7 @@
             // Show xkcd comic
             AnnyangService.addCommand('Show (a) comic', function(state, action) {
                 console.debug("Fetching a comic for you.");
+                responsiveVoice.speak("OK " + $scope.user.name + "Fetching a comic for you." );
                 XKCDService.getXKCD().then(function(data){
                     $scope.xkcd = data.img;
                     $scope.focus = "comic";
@@ -273,6 +307,7 @@
             // Show Dilbert comic
             AnnyangService.addCommand('Show Dilbert (comic)', function(state, action) {
                 console.debug("Fetching a Dilbert comic for you.");
+                 responsiveVoice.speak("OK " + $scope.user.name + "Fetching a dilbert comic for you." );
                 $scope.dilbert = XKCDService.getDilbert("today");
                 $scope.focus = "dilbert";
             });
@@ -284,13 +319,16 @@
                   case 'calendar':
                     $scope.showCalendar = false;
                     console.debug("Hiding the ", section);
+                    responsiveVoice.speak("OK.. task is taken care of.");
                     break;
                   case 'reminders':
                     $scope.showTodo = false;
                     console.debug("Hiding the ", section);
+                    responsiveVoice.speak("OK.. task is taken care of.");
                   break;
                     default:
                     console.debug("I can't hide ", section);
+                    responsiveVoice.speak("Don't trick me into this boy.");
                   break;
                 };
             });
@@ -301,13 +339,16 @@
                   case 'calendar':
                      $scope.showCalendar = true;
                      console.debug("Showing the ", section);
+                     responsiveVoice.speak("OK.. task is taken care of.");
                      break;
                   case 'reminders':
                      $scope.showTodo = true;
                      console.debug("Showing the ", section);
+                     responsiveVoice.speak("OK.. task is taken care of.");
                      break;
                   default:
                      console.debug("I can't show ", section);
+                     responsiveVoice.speak("Don't trick me into this boy.");
                      break;
                 };
 			});
@@ -315,6 +356,7 @@
             // Delete task id - id is the display id 1, 2, etc...
             AnnyangService.addCommand('Delete task *id', function(id) {
                 TodoService.removeTask(id).then(function(){
+                	responsiveVoice.speak("OK task"+ id + "marked as complete, well done!");
                     setTimeout(refreshTodoList, 1000);
                 });
             });
@@ -322,6 +364,7 @@
             // Add task - just say task description
             AnnyangService.addCommand('Add task *id', function(id) {
                 TodoService.addTask(id).then(function(){
+                	responsiveVoice.speak("OK " + $scope.user.name + " i will remind you to" + id);
                     setTimeout(refreshTodoList, 1000);
                 });
             });
