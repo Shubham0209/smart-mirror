@@ -10,6 +10,7 @@
             CalendarService,
             XKCDService,
             GiphyService,
+            SearchService,
             TrafficService,
             TodoService,
             RssService,
@@ -119,6 +120,16 @@
             		console.log(error);
             	});
             };
+            
+            //Set the mirror's focus (and reset any vars)
+            var setFocus = function(target){
+                $scope.focus = target;
+                //Stop any videos from playing
+                if(target != 'video'){
+                    $scope.video = 'http://www.youtube.com/embed/';
+                }
+                console.log("Video URL:", $scope.video);
+            }
 
             refreshWeather();
             $interval(refreshWeather, config.forcast.refreshInterval * 60000);  
@@ -165,7 +176,7 @@
             var defaultView = function() {
                 console.debug("Ok, going to default view...");
                 responsiveVoice.speak("Ok going to default view now");
-                $scope.focus = "default";
+                setFocus("default");
             }
 
             // List commands
@@ -173,7 +184,7 @@
                 console.debug("Here is a list of commands...");
                 responsiveVoice.speak("Here is a list of commands...");
                 console.log(AnnyangService.commands);
-                $scope.focus = "commands";
+                setFocus("commands");
             });
 
             // Go back to default view
@@ -183,15 +194,26 @@
             AnnyangService.addCommand('(Go to) sleep', function() {
                 console.debug("Ok, going to sleep...");
                 responsiveVoice.speak("Ok, going to sleep...");
-                $scope.focus = "sleep";
+                setFocus("sleep");
             });
+            
+            
+            //Search for a video
+            AnnyangService.addCommand('show me (a video)(of)(about) *query', function(query){
+                SearchService.searchYouTube(query).then(function(results){
+                    //Set cc_load_policy=1 to force captions
+                    $scope.video = 'http://www.youtube.com/embed/'+results.data.items[0].id.videoId+'?autoplay=1&controls=0&iv_load_policy=3&enablejsapi=1&showinfo=0';
+                    responsiveVoice.speak("Ok, loading the requested video...");
+                    setFocus("video");
+                });
+             });
 
             // Go back to default view
                         AnnyangService.addCommand('Wake up', function(){
             				setTimeout(function(){
 					responsiveVoice.speak("Hello " + $scope.user.name + " how can i help you?");
 				}, 3000);
-				$scope.focus = "default";
+				setFocus("default");
 			});
 
 
@@ -209,7 +231,7 @@
                     GeolocationService.getLocation({enableHighAccuracy: true}).then(function(geoposition){
                     console.log("Geoposition", geoposition);
                     $scope.map = MapService.generateMap(geoposition.coords.latitude+','+geoposition.coords.longitude);
-                    $scope.focus = "map";
+                    setFocus("map");
                 });
              });
 
@@ -218,7 +240,7 @@
                 console.debug("Getting map of", location);
                 responsiveVoice.speak("Getting map of"+location+"...It might take some time");
                 $scope.map = MapService.generateMap(location);
-                $scope.focus = "map";
+                setFocus("map");
             });
 
             // Zoom in map
@@ -244,7 +266,7 @@
                 console.debug("Zoooommmmmzzz00000!!!");
                 responsiveVoice.speak("resetting the map zoom");
                 $scope.map = MapService.reset();
-                $scope.focus = "map";
+                setFocus("map");
             });
 
             // Search images
@@ -290,7 +312,7 @@
                 GiphyService.init(img).then(function(){
                 responsiveVoice.speak("OK showing the giphy of"+ img);
                     $scope.gifimg = GiphyService.giphyImg();
-                    $scope.focus = "gif";
+                    setFocus("gif");
                 });
             });
 
@@ -300,7 +322,7 @@
                 responsiveVoice.speak("OK " + $scope.user.name + "Fetching a comic for you." );
                 XKCDService.getXKCD().then(function(data){
                     $scope.xkcd = data.img;
-                    $scope.focus = "comic";
+                    setFocus("comic");
                 });
             });
 
@@ -309,7 +331,7 @@
                 console.debug("Fetching a Dilbert comic for you.");
                  responsiveVoice.speak("OK " + $scope.user.name + "Fetching a dilbert comic for you." );
                 $scope.dilbert = XKCDService.getDilbert("today");
-                $scope.focus = "dilbert";
+                setFocus("dilbert");
             });
 
 
