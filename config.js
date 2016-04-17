@@ -51,5 +51,8 @@ var config = {
     rss: {
       feeds : [],
       refreshInterval : 120 // Number of minutes the information is refreshed
+    },
+    soundcloud:{
+        key : ""
     }
 }
