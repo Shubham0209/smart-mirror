@@ -50,9 +50,9 @@
             <li class="event" ng-repeat="event in calendar">
                 <div class="event-details">
                     <span><i class="fa fa-calendar" style="margin-left:15px;font-size:20px";></i></span>
+                    <span class="day">{{event.start.format('dddd') | uppercase}}</span>
                     <span class="summary">{{event.SUMMARY}}</span>
-                    <div ng-if="event.sameDayEvent==true"  class="details">{{event.start.format('dddd MMM Do, h:mm a')}} - {{event.end.format('h:mm a')}}</div>
-                    <div ng-if="event.sameDayEvent==false" class="details">{{event.start.format('dddd MMM Do, h:mm a')}} - {{event.end.format('MMM Do, h:mm a')}}</div>
+                    <div class="details">{{event.start.format('MMMM Do YYYY, h:mm:ss a')}}</div>
                 </div>
             </li>
         </ul>
@@ -126,11 +126,9 @@
             <dd>Shows a list of voice commands available to you.</dd>
             <dt>Go home</dt>
             <dd>Takes you back to the home screen</dd>
-            <dt>Show me ________</dt>
-            <dd>Will show you pictures of the requested item.</dd>
-            <dt>Remind me to ________</dt>
+            <dt>Add task ________</dt>
             <dd>Add something to the reminders list.</dd>
-            <dt>Clear reminders</dt>
+            <dt>Delete task *id</dt>
             <dd>Clears out your reminders list.</dd>
             <dt>Show map</dt>
             <dd>Shows a map of your current city.</dd>
@@ -138,7 +136,7 @@
             <dd>Shows a map of the given location.</dd>
             <dt>Show comic</dt>
             <dd>Shows the most recent xkcd comic.</dd>
-            <dt>Giphy ________</dt>
+            <dt>Get ________</dt>
             <dd>Shows a giphy image </dd>
           </dl>
           <small>
